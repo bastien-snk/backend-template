@@ -26,6 +26,8 @@
 
 Ask the user whenever a product or architecture decision is ambiguous.
 
+Claude commands: `epic-create`, `phase-design`, `phase-implement`, `phase-review`, `phase-address-review`, and `phase-validate`. The independent `phase-reviewer` agent reports findings only and never modifies code.
+
 ## Verification
 
 ```bash

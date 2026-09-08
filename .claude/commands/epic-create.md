@@ -1,0 +1,1 @@
+Read `docs/workflow/development.md` and `docs/workflow/epic-template.md`. Create or revise the product epic for: $ARGUMENTS. Ask about ambiguous product or architecture decisions. Do not design implementation details or modify production code.

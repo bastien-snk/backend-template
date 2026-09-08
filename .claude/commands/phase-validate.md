@@ -1,0 +1,1 @@
+Read `docs/workflow/development.md`, the epic, and the phase brief for: $ARGUMENTS. Confirm acceptance criteria, review corrections, verification, and documentation. Do not modify code. Ask the user for approval and mark Validated only after approval.

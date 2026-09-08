@@ -1,0 +1,1 @@
+Read `docs/workflow/development.md`, the phase brief for: $ARGUMENTS, and `docs/workflow/review-checklist.md`. Review without modifying files. Report findings first, ordered by severity, with file and line references.

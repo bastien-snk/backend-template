@@ -1,0 +1,1 @@
+Read `docs/workflow/development.md`, the phase brief, and accepted findings for: $ARGUMENTS. Apply only accepted corrections, update tests and documentation when required, and rerun relevant verification. Mark Reviewed only after checks pass.

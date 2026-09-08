@@ -1,0 +1,1 @@
+Read `docs/workflow/development.md`, the epic, and `docs/workflow/phase-template.md`. Design the phase for: $ARGUMENTS. Define the `[new]` and `[modified]` tree, contracts, ports, adapters, tests, and acceptance criteria. Ask about blocking ambiguity. Do not modify production code.

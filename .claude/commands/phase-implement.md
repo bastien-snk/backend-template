@@ -1,0 +1,1 @@
+Read `docs/workflow/development.md`, the epic, and the Ready phase brief for: $ARGUMENTS. Implement only its scope, add required tests, run verification, update tasks, and record deviations. Stop at Implemented and request review.
