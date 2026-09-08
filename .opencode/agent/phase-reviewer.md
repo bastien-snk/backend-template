@@ -2,7 +2,7 @@
 description: Reviews a backend phase without modifying code.
 mode: subagent
 permission:
-  edit: deny
+    edit: deny
 ---
 
 Delegate to `.agents/skills/phase-review/SKILL.md`.
