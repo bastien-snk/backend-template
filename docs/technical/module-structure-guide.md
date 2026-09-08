@@ -105,7 +105,7 @@ Quand un module a besoin d'une contrainte SQL vers une table d'un autre module:
 
 Pattern recommandé:
 
-- declarer la FK cross-module via `references()` dans `infrastructure/persistence/drizzle/model/*`,
+- declarer la FK cross-module via `references()` dans `infrastructure/adapter/outbound/persistence/drizzle/model/*`,
 - limiter cet import cross-module a la couche schema/persistence,
 - documenter cette FK dans l'epic et la doc technique du module.
 
@@ -119,7 +119,7 @@ Direction des dependances:
 
 Interdits:
 
-- logique metier lourde dans `infrastructure/http/controller`
+- logique metier lourde dans `infrastructure/adapter/inbound/http/controller`
 - acces DB dans `domain`
 - couplage direct a l'infra d'un autre module
 
@@ -153,15 +153,15 @@ Cycle de vie attendu:
 
 - Use-cases en `command/` et `query/`.
 - Types `Input`/`Output` colocalises dans les fichiers `command/` et `query/`.
-- Modeles applicatifs internes en `model/`.
+- DTO applicatifs internes en `dto/`.
 - Ports en `port/` (interfaces) et adapters techniques en `infrastructure/`.
 - Pour les integrations multi-provider: ajouter un `*-provider-selector` en `application/port/`.
 - Erreurs applicatives dans `application/errors`.
 
 ### Infrastructure
 
-- HTTP dans `infrastructure/http/*`.
-- Drizzle dans `infrastructure/persistence/drizzle/*`.
+- HTTP dans `infrastructure/adapter/inbound/http/*`.
+- Drizzle dans `infrastructure/adapter/outbound/persistence/drizzle/*`.
 - Integrations externes dans `infrastructure/external/`.
 - Pour les providers externes: implementer un registry selector en
   `infrastructure/external/provider/*-provider-registry.ts`.
@@ -250,10 +250,10 @@ Pour toute query qui retourne une liste paginee, suivre ce pattern strictement.
 |---|---|
 | `application/query` | Clamp limit, decode curseur entrant, owne la constante de tri (`MODULE_SORT`), encode `nextCursor`, retourne `Page<T>` |
 | `application/repository` (port) | Accepte `limit: number`, `cursor: CursorPayload \| null`, `sort: SortField[]` — tous requis (pas de valeurs par defaut). Retourne `{ data: T[]; hasMore: boolean }` |
-| `infrastructure/persistence` (adapter Drizzle) | Utilise `DrizzleCursorApplier.buildWhere()` + `buildOrderBy()` avec `input.sort`. Retourne `{ data, hasMore }` sans encoder le curseur. |
-| `infrastructure/http/controller` | Attrape `InvalidCursorError` → `InvalidPaginationCursorError` (400) |
-| `infrastructure/http/mapper` | Utilise `PageResponseMapper<Input, Output>` pour convertir `Page<T>` → `CursorPageResponse<T>` (snake_case HTTP) |
-| `infrastructure/http/schema` | Compose `paginationQuerySchema` via `t.Composite([paginationQuerySchema, ...])` |
+| `infrastructure/adapter/outbound/persistence` (adapter Drizzle) | Utilise `DrizzleCursorApplier.buildWhere()` + `buildOrderBy()` avec `input.sort`. Retourne `{ data, hasMore }` sans encoder le curseur. |
+| `infrastructure/adapter/inbound/http/controller` | Attrape `InvalidCursorError` → `InvalidPaginationCursorError` (400) |
+| `infrastructure/adapter/inbound/http/mapper` | Utilise `PageResponseMapper<Input, Output>` pour convertir `Page<T>` → `CursorPageResponse<T>` (snake_case HTTP) |
+| `infrastructure/adapter/inbound/http/schema` | Compose `paginationQuerySchema` via `t.Composite([paginationQuerySchema, ...])` |
 
 ### Types systeme a utiliser
 

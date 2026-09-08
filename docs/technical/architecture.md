@@ -120,7 +120,7 @@ Notes:
 
 - Tous les sous-dossiers ne sont pas obligatoires des le depart.
 - `api/` est la frontiere inter-modules in-process: aucune route HTTP dans `api/`.
-- Le transport HTTP (Elysia routes/controllers) vit dans `infrastructure/http/`.
+- Le transport HTTP (Elysia routes/controllers) vit dans `infrastructure/adapter/inbound/http/`.
 - Le module expose sa surface publique via `index.ts` et ses contrats/facades dans `api/`.
 - Si un module publie des integration events inter-modules, leurs contrats vivent dans `api/event/`.
 
@@ -241,7 +241,7 @@ Regle adoptee:
 
 Implementation recommandee:
 
-- declarer la FK cross-module avec `references()` dans `infrastructure/persistence/drizzle/model/*`,
+- declarer la FK cross-module avec `references()` dans `infrastructure/adapter/outbound/persistence/drizzle/model/*`,
 - limiter l'import cross-module aux definitions de tables (pas de repositories, pas de services,
   pas de logique metier),
 - documenter explicitement la FK cross-module dans l'epic du module.
@@ -336,10 +336,10 @@ Ce backend utilise la **pagination par curseur opaque** (cursor-based pagination
 |---|---|
 | `application/query` | Clamp du limit, decode du curseur entrant, owne l'ordre de tri (`SORT` constant), encode le `nextCursor`, retourne `Page<T>` |
 | `application/repository` (port) | Accepte `limit: number`, `cursor: CursorPayload \| null`, `sort: SortField[]` (tous requis, sans valeurs par defaut). Retourne `{ data: T[]; hasMore: boolean }` |
-| `infrastructure/persistence` (adapter) | Execute la requete avec `DrizzleCursorApplier.buildWhere()` + `buildOrderBy()`. Retourne `{ data, hasMore }` sans encoder le curseur. |
-| `infrastructure/http/controller` | Attrape `InvalidCursorError` → `InvalidPaginationCursorError` (400) |
-| `infrastructure/http/mapper` | Utilise `PageResponseMapper<Input, Output>` pour convertir `Page<T>` → `CursorPageResponse<T>` (snake_case HTTP) |
-| `infrastructure/http/schema` | Compose `paginationQuerySchema` via `t.Composite` |
+| `infrastructure/adapter/outbound/persistence` | Execute la requete avec `DrizzleCursorApplier.buildWhere()` + `buildOrderBy()`. Retourne `{ data, hasMore }` sans encoder le curseur. |
+| `infrastructure/adapter/inbound/http/controller` | Attrape `InvalidCursorError` → `InvalidPaginationCursorError` (400) |
+| `infrastructure/adapter/inbound/http/mapper` | Utilise `PageResponseMapper<Input, Output>` pour convertir `Page<T>` → `CursorPageResponse<T>` (snake_case HTTP) |
+| `infrastructure/adapter/inbound/http/schema` | Compose `paginationQuerySchema` via `t.Composite` |
 
 ### Types systeme (`src/systems/pagination/`)
 
@@ -376,7 +376,7 @@ async execute(input): Promise<Page<Thesis>> {
 // application/repository/thesis-repository.ts (port)
 list(input: { limit: number; cursor: CursorPayload | null; sort: SortField[]; ... }): Promise<{ data: Thesis[]; hasMore: boolean }>;
 
-// infrastructure/persistence/drizzle/repository/drizzle-thesis-repository.ts
+// infrastructure/adapter/outbound/persistence/drizzle/repository/drizzle-thesis-repository.ts
 async list(input): Promise<{ data: Thesis[]; hasMore: boolean }> {
     // use input.sort (no hardcoded sort), DrizzleCursorApplier.buildWhere/buildOrderBy
     // return { data, hasMore } — NO cursor encoding
@@ -396,7 +396,7 @@ async list(input): Promise<{ data: Thesis[]; hasMore: boolean }> {
 Quand vous ajoutez une fonctionnalite:
 
 1. Placez la logique metier dans `domain`/`application`, pas dans les adapters.
-2. Colocalisez les types `Input`/`Output` dans chaque command/query et utilisez `application/model` pour les modeles applicatifs internes.
+2. Colocalisez les types `Input`/`Output` dans chaque command/query et utilisez `application/dto` pour les DTO applicatifs internes.
 3. Gardez les dependances dirigees vers le coeur metier.
 4. Enregistrez le module dans `Application` si nouveau module.
 5. Documentez les decisions structurantes dans `docs/` (epics/ADR/docs techniques).
