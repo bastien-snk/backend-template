@@ -270,16 +270,16 @@ La gestion des jobs suit un pattern module-first avec un systeme transverse dedi
 ### Systeme transverse `systems/jobs`
 
 - `src/systems/jobs/core/` expose les contrats minimaux partages:
-  - `JobSender`
-  - `JobWorker`
-  - `JobPayloadParser`
-  - `JobDefinition` (name-only)
-  - `JobHandler`
-  - `JobContext` (vide pour MVP)
-  - `Worker` (contrat de cycle de vie worker cote module)
+    - `JobSender`
+    - `JobWorker`
+    - `JobPayloadParser`
+    - `JobDefinition` (name-only)
+    - `JobHandler`
+    - `JobContext` (vide pour MVP)
+    - `Worker` (contrat de cycle de vie worker cote module)
 - `src/systems/jobs/pg-boss/` contient l'adaptation concrete `pg-boss`:
-  - `PgBossJobSender`
-  - `PgBossJobWorker`
+    - `PgBossJobSender`
+    - `PgBossJobWorker`
 - `src/systems/jobs/parser/` contient les parseurs runtime (ex: `ZodJobPayloadParser`).
 
 Regles:
@@ -332,14 +332,14 @@ Ce backend utilise la **pagination par curseur opaque** (cursor-based pagination
 
 ### Responsabilites
 
-| Couche | Responsabilite |
-|---|---|
-| `application/query` | Clamp du limit, decode du curseur entrant, owne l'ordre de tri (`SORT` constant), encode le `nextCursor`, retourne `Page<T>` |
-| `application/repository` (port) | Accepte `limit: number`, `cursor: CursorPayload \| null`, `sort: SortField[]` (tous requis, sans valeurs par defaut). Retourne `{ data: T[]; hasMore: boolean }` |
-| `infrastructure/adapter/outbound/persistence` | Execute la requete avec `DrizzleCursorApplier.buildWhere()` + `buildOrderBy()`. Retourne `{ data, hasMore }` sans encoder le curseur. |
-| `infrastructure/adapter/inbound/http/controller` | Attrape `InvalidCursorError` → `InvalidPaginationCursorError` (400) |
-| `infrastructure/adapter/inbound/http/mapper` | Utilise `PageResponseMapper<Input, Output>` pour convertir `Page<T>` → `CursorPageResponse<T>` (snake_case HTTP) |
-| `infrastructure/adapter/inbound/http/schema` | Compose `paginationQuerySchema` via `t.Composite` |
+| Couche                                           | Responsabilite                                                                                                                                                   |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `application/query`                              | Clamp du limit, decode du curseur entrant, owne l'ordre de tri (`SORT` constant), encode le `nextCursor`, retourne `Page<T>`                                     |
+| `application/repository` (port)                  | Accepte `limit: number`, `cursor: CursorPayload \| null`, `sort: SortField[]` (tous requis, sans valeurs par defaut). Retourne `{ data: T[]; hasMore: boolean }` |
+| `infrastructure/adapter/outbound/persistence`    | Execute la requete avec `DrizzleCursorApplier.buildWhere()` + `buildOrderBy()`. Retourne `{ data, hasMore }` sans encoder le curseur.                            |
+| `infrastructure/adapter/inbound/http/controller` | Attrape `InvalidCursorError` → `InvalidPaginationCursorError` (400)                                                                                              |
+| `infrastructure/adapter/inbound/http/mapper`     | Utilise `PageResponseMapper<Input, Output>` pour convertir `Page<T>` → `CursorPageResponse<T>` (snake_case HTTP)                                                 |
+| `infrastructure/adapter/inbound/http/schema`     | Compose `paginationQuerySchema` via `t.Composite`                                                                                                                |
 
 ### Types systeme (`src/systems/pagination/`)
 

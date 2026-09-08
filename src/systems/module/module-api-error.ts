@@ -1,4 +1,5 @@
-export interface ModuleApiError {
-  readonly code: string;
-  readonly message: string;
-}
+export type ModuleApiError<Code extends string = string> = {
+    code: Code;
+    message: string;
+    details?: unknown;
+};

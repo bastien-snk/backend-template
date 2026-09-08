@@ -1,5 +1,10 @@
-import type {Actor} from "@/systems/authentication/actor";
+import type { Actor } from "@/systems/authentication/actor";
 
+export type ResolveActorInput = {
+    headers: Headers;
+};
+
+/** Resolves one authentication mechanism to a fully usable application actor. */
 export interface ActorResolver {
-  resolve(request: Request): Promise<Actor | null>;
+    resolve(input: ResolveActorInput): Promise<Actor | null>;
 }

@@ -25,15 +25,15 @@
 
 ## Phase Roadmap
 
-| Phase | Objective | Status | Brief |
-|---|---|---|---|
-| 1 | [Outcome] | Draft | [Phase 1](./feature/phases/01-name.md) |
+| Phase | Objective | Status | Brief                                  |
+| ----- | --------- | ------ | -------------------------------------- |
+| 1     | [Outcome] | Draft  | [Phase 1](./feature/phases/01-name.md) |
 
 ## Product Decisions
 
-| Decision | Choice | Rationale |
-|---|---|---|
-| [Decision] | [Choice] | [Why] |
+| Decision   | Choice   | Rationale |
+| ---------- | -------- | --------- |
+| [Decision] | [Choice] | [Why]     |
 
 ## Completion
 

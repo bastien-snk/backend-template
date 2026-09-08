@@ -3,8 +3,11 @@
 ## Stack
 
 - Runtime: Bun + TypeScript
+- Runtimes: API, WebSocket, worker
 - API: Elysia + OpenAPI
 - Database: PostgreSQL + Drizzle
+- Jobs: pg-boss
+- Messaging: NATS
 - Entry: `src/main.ts`
 
 ## Sources of truth

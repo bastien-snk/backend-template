@@ -1,55 +1,74 @@
-import type {Logger} from "@/systems/logging";
-import {Module, type ModuleDependencyResolver} from "@/systems/module/module";
+import type { Logger } from "@/systems/logger";
+import { Module } from "@/systems/module/module";
+import type { ModuleDependencyResolver } from "@/systems/module/module-dependency-resolver";
 
 export class ModuleManager implements ModuleDependencyResolver {
-  private readonly modules: Module[] = [];
-  private readonly modulesByName = new Map<string, Module>();
+    private readonly modules: Module[] = [];
+    private readonly moduleIds = new Set<string>();
+    private readonly modulesById = new Map<string, Module>();
 
-  constructor(private readonly logger: Logger) {}
+    constructor(private readonly logger: Logger) {}
 
-  register(...modules: Module[]): this {
-    for (const module of modules) {
-      if (this.modulesByName.has(module.name)) {
-        throw new Error(`module '${module.name}' is already registered`);
-      }
+    register(...modules: Module[]): this {
+        for (const module of modules) {
+            if (this.moduleIds.has(module.name)) {
+                throw new Error(
+                    `module '${module.name}' is already registered`,
+                );
+            }
 
-      const missing = module.requires.filter((name) => !this.modulesByName.has(name));
-      if (missing.length > 0) {
-        throw new Error(`module '${module.name}' missing required dependencies: ${missing.join(", ")}`);
-      }
+            const missingDependencies = module.requires.filter(
+                (moduleId) => !this.moduleIds.has(moduleId),
+            );
+            if (missingDependencies.length > 0) {
+                const missingNames = missingDependencies.join(", ");
+                throw new Error(
+                    `module '${module.name}' missing required dependencies: ${missingNames}`,
+                );
+            }
 
-      this.modules.push(module);
-      this.modulesByName.set(module.name, module);
+            this.moduleIds.add(module.name);
+            this.modulesById.set(module.name, module);
+            this.modules.push(module);
+        }
+
+        return this;
     }
 
-    return this;
-  }
+    resolve<TModule extends Module>(moduleId: string): TModule {
+        if (!this.modulesById.has(moduleId)) {
+            throw new Error(`module dependency not found: ${moduleId}`);
+        }
 
-  resolve<TModule extends Module>(moduleName: string): TModule {
-    const module = this.modulesByName.get(moduleName);
-    if (!module) {
-      throw new Error(`module dependency not found: ${moduleName}`);
+        return this.modulesById.get(moduleId) as TModule;
     }
 
-    return module as TModule;
-  }
+    async setupAll(): Promise<void> {
+        for (const module of this.modules) {
+            try {
+                this.logger.info("module setup", { module: module.name });
+                await module.setup(this);
 
-  async setupAll(): Promise<void> {
-    for (const module of this.modules) {
-      this.logger.info({module: module.name}, "module setup");
-      await module.setup(this);
+                this.logger.info("module ready", { module: module.name });
+            } catch (error) {
+                this.logger.warn("module setup failed", {
+                    module: module.name,
+                    error,
+                });
+                throw error;
+            }
+        }
     }
-  }
 
-  async startAll(): Promise<void> {
-    for (const module of this.modules) {
-      await module.start();
+    async start(): Promise<void> {
+        for (const module of this.modules) {
+            await module.start();
+        }
     }
-  }
 
-  async stopAll(): Promise<void> {
-    for (const module of [...this.modules].reverse()) {
-      await module.stop();
+    async stop(): Promise<void> {
+        for (const module of [...this.modules].reverse()) {
+            await module.stop();
+        }
     }
-  }
 }

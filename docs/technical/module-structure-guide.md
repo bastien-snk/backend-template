@@ -246,14 +246,14 @@ Pour toute query qui retourne une liste paginee, suivre ce pattern strictement.
 
 ### Responsabilites par couche
 
-| Couche | Responsabilite |
-|---|---|
-| `application/query` | Clamp limit, decode curseur entrant, owne la constante de tri (`MODULE_SORT`), encode `nextCursor`, retourne `Page<T>` |
-| `application/repository` (port) | Accepte `limit: number`, `cursor: CursorPayload \| null`, `sort: SortField[]` — tous requis (pas de valeurs par defaut). Retourne `{ data: T[]; hasMore: boolean }` |
-| `infrastructure/adapter/outbound/persistence` (adapter Drizzle) | Utilise `DrizzleCursorApplier.buildWhere()` + `buildOrderBy()` avec `input.sort`. Retourne `{ data, hasMore }` sans encoder le curseur. |
-| `infrastructure/adapter/inbound/http/controller` | Attrape `InvalidCursorError` → `InvalidPaginationCursorError` (400) |
-| `infrastructure/adapter/inbound/http/mapper` | Utilise `PageResponseMapper<Input, Output>` pour convertir `Page<T>` → `CursorPageResponse<T>` (snake_case HTTP) |
-| `infrastructure/adapter/inbound/http/schema` | Compose `paginationQuerySchema` via `t.Composite([paginationQuerySchema, ...])` |
+| Couche                                                          | Responsabilite                                                                                                                                                      |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `application/query`                                             | Clamp limit, decode curseur entrant, owne la constante de tri (`MODULE_SORT`), encode `nextCursor`, retourne `Page<T>`                                              |
+| `application/repository` (port)                                 | Accepte `limit: number`, `cursor: CursorPayload \| null`, `sort: SortField[]` — tous requis (pas de valeurs par defaut). Retourne `{ data: T[]; hasMore: boolean }` |
+| `infrastructure/adapter/outbound/persistence` (adapter Drizzle) | Utilise `DrizzleCursorApplier.buildWhere()` + `buildOrderBy()` avec `input.sort`. Retourne `{ data, hasMore }` sans encoder le curseur.                             |
+| `infrastructure/adapter/inbound/http/controller`                | Attrape `InvalidCursorError` → `InvalidPaginationCursorError` (400)                                                                                                 |
+| `infrastructure/adapter/inbound/http/mapper`                    | Utilise `PageResponseMapper<Input, Output>` pour convertir `Page<T>` → `CursorPageResponse<T>` (snake_case HTTP)                                                    |
+| `infrastructure/adapter/inbound/http/schema`                    | Compose `paginationQuerySchema` via `t.Composite([paginationQuerySchema, ...])`                                                                                     |
 
 ### Types systeme a utiliser
 

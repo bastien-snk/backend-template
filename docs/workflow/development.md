@@ -6,12 +6,12 @@ Virtosia develops major features through product epics and validated implementat
 
 ## Artifacts
 
-| Artifact | Location | Purpose |
-|---|---|---|
-| Product epic | `docs/epics/<feature>.md` | Product outcome, rules, scope, and phase roadmap |
-| Phase brief | `docs/epics/<feature>/phases/<nn>-<name>.md` | Implementation-ready design for one phase |
-| Architecture | `docs/technical/architecture.md` | Shared technical rules and module boundaries |
-| Product design | `docs/product/` | Game-wide product source of truth |
+| Artifact       | Location                                     | Purpose                                          |
+| -------------- | -------------------------------------------- | ------------------------------------------------ |
+| Product epic   | `docs/epics/<feature>.md`                    | Product outcome, rules, scope, and phase roadmap |
+| Phase brief    | `docs/epics/<feature>/phases/<nn>-<name>.md` | Implementation-ready design for one phase        |
+| Architecture   | `docs/technical/architecture.md`             | Shared technical rules and module boundaries     |
+| Product design | `docs/product/`                              | Game-wide product source of truth                |
 
 An epic must not duplicate the project architecture. It links to architecture and records only feature-specific product decisions. A phase brief contains the technical decisions required for that phase.
 
@@ -64,12 +64,12 @@ Run `bun run format` when closing an epic or when the phase explicitly requires 
 
 ## Phase States
 
-| State | Meaning |
-|---|---|
-| `Draft` | Product or technical questions remain |
-| `Ready` | Approved and unambiguous enough to implement |
-| `In progress` | Implementation is underway |
-| `Implemented` | Scope is implemented and self-verified |
-| `In review` | Findings are being assessed |
-| `Reviewed` | Findings are addressed and checks pass |
-| `Validated` | User approved completion |
+| State         | Meaning                                      |
+| ------------- | -------------------------------------------- |
+| `Draft`       | Product or technical questions remain        |
+| `Ready`       | Approved and unambiguous enough to implement |
+| `In progress` | Implementation is underway                   |
+| `Implemented` | Scope is implemented and self-verified       |
+| `In review`   | Findings are being assessed                  |
+| `Reviewed`    | Findings are addressed and checks pass       |
+| `Validated`   | User approved completion                     |

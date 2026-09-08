@@ -1,3 +1,4 @@
-export {Module, type ModuleDependencyResolver} from "@/systems/module/module";
-export {ModuleManager} from "@/systems/module/module-manager";
-export type {ModuleApiError} from "@/systems/module/module-api-error";
+export { Module } from "./module";
+export { ModuleManager } from "./module-manager";
+export type { ModuleDependencyResolver } from "./module-dependency-resolver";
+export type { ModuleApiError } from "./module-api-error";

@@ -1,3 +1,5 @@
 export enum AppMode {
-  API = "api",
+    API = "api",
+    WS = "ws",
+    WORKER = "worker",
 }
