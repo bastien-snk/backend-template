@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if (( $# > 1 )); then
+    printf '%s\n' 'Usage: scripts/backend-template/update [tag|latest]' >&2
+    exit 1
+fi
+
+if [[ -n "$(git status --porcelain)" ]]; then
+    printf '%s\n' 'Refusing to update: the working tree is not clean.' >&2
+    exit 1
+fi
+
+if ! git remote get-url backend-template >/dev/null 2>&1; then
+    printf '%s\n' 'Refusing to update: the backend-template remote is not configured.' >&2
+    exit 1
+fi
+
+git fetch --prune backend-template '+refs/tags/*:refs/tags/backend-template/*'
+
+target="${1:-latest}"
+if [[ "$target" == 'latest' ]]; then
+    target=''
+    while IFS= read -r candidate; do
+        if [[ "$candidate" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z]+)*$ ]]; then
+            target="$candidate"
+            break
+        fi
+    done < <(git for-each-ref --format='%(refname:strip=3)' --sort=-version:refname refs/tags/backend-template)
+fi
+
+if [[ -z "$target" ]] || ! git show-ref --verify --quiet "refs/tags/backend-template/$target"; then
+    printf 'Refusing to update: backend-template tag "%s" was not found.\n' "$target" >&2
+    exit 1
+fi
+
+git merge --no-commit --no-ff "refs/tags/backend-template/$target"
+printf 'Merged backend-template %s without committing. Review the diff, run verification, then commit.\n' "$target"
