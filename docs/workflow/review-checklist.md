@@ -15,6 +15,8 @@
 ## Architecture
 
 - [ ] The implementation respects `docs/technical/architecture.md` 1:1.
+- [ ] The phase brief was consistent with `docs/technical/architecture.md`, `docs/technical/module-structure-guide.md` and `docs/technical/conventions.md` before implementation.
+- [ ] The implementation respects applicable conventions for module structure, boundaries, persistence, contracts, migrations, and tests.
 
 ## Verification
 

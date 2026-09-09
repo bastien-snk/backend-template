@@ -5,6 +5,7 @@
 - Domain entities, value objects, services, and policies require unit tests.
 - Application commands and queries require tests when they perform meaningful orchestration.
 - Infrastructure tests are targeted at critical mappings, persistence behavior, and adapters with non-trivial logic.
+- Database-error helpers that translate PostgreSQL SQLSTATE errors require direct-driver and Drizzle-wrapped error cases, plus relevant constraint-match cases.
 - End-to-end tests cover externally observable API contracts and cross-module flows.
 
 ## Structure

@@ -36,11 +36,25 @@ Create or update a product epic before starting a major feature. It defines the 
 
 Design only the next phase in detail. A phase is `Ready` when its scope, business rules, technical decisions, dependencies, tests, and acceptance criteria are unambiguous. Use [Phase Template](./phase-template.md).
 
+Before marking a phase `Ready`, compare its technical design against
+[`docs/technical/architecture.md`](../technical/architecture.md),
+[`docs/technical/module-structure-guide.md`](../technical/module-structure-guide.md),
+[`docs/technical/conventions.md`](../technical/conventions.md),
+and the applicable conventions they define. Verify dependency boundaries, the canonical file tree, public in-process API, HTTP boundary, persistence, dependencies, migrations, contracts, and required tests.
+
+If a brief conflicts with an architecture rule, module structure rule, or applicable convention, it remains `Draft`. Record the conflict and options in `Open Questions`, then ask the user for a decision. Do not turn an architectural conflict into an implicit implementation decision.
+
 If a product or architecture decision is ambiguous, stop and ask the user. Do not resolve it implicitly in code.
 
 ### Implementation
 
 Implement one ready phase at a time. Read the product epic and current phase brief before changing code. Stay within the brief's scope. Record intentional deviations in the phase brief.
+
+If implementation reveals that a Ready brief conflicts with
+[`docs/technical/architecture.md`](../technical/architecture.md),
+[`docs/technical/module-structure-guide.md`](../technical/module-structure-guide.md),
+[`docs/technical/conventions.md`](../technical/conventions.md),
+or their applicable conventions, stop work on the conflicting point. Record the conflict and options in `Open Questions`, then ask the user for a decision. Do not resolve it implicitly in code.
 
 Update task checkboxes only after the associated work and verification are complete.
 

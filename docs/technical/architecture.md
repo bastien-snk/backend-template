@@ -75,15 +75,22 @@ src/modules/<module-name>/
           routes/
           controller/
           schema/
+            endpoint/
+            request/
+            response/
+            params/
+            query/
           mapper/
         event/listener/
         job/handler/
       outbound/
         persistence/
           drizzle/
-            repository/
+            model/
             schema/
+            repository/
             mapper/
+            types/
         event/publisher/
         external/
         config/
@@ -121,6 +128,8 @@ Notes:
 - Tous les sous-dossiers ne sont pas obligatoires des le depart.
 - `api/` est la frontiere inter-modules in-process: aucune route HTTP dans `api/`.
 - Le transport HTTP (Elysia routes/controllers) vit dans `infrastructure/adapter/inbound/http/`.
+- Un adapter HTTP d'un module ne depend jamais de `api/`, `facade.ts`, `api/view/`, `api/type/` ou `api/mapper/` de ce meme module. `api/` est exclusivement la frontiere inter-modules in-process.
+- Le flux HTTP est `application/domain -> mapper HTTP -> reponse wire`. Les controllers appellent les use-cases applicatifs et les mappers HTTP traduisent leurs modeles vers le contrat wire.
 - Le module expose sa surface publique via `index.ts` et ses contrats/facades dans `api/`.
 - Si un module publie des integration events inter-modules, leurs contrats vivent dans `api/event/`.
 
@@ -163,6 +172,13 @@ Ce pattern evite les `if/else` provider dans les use-cases et facilite l'extensi
 - `domain/errors`: erreurs metier et violations d'invariants.
 - `application/errors`: erreurs d'orchestration/use-case.
 - `infrastructure/errors`: erreurs techniques/adapters.
+
+### Persistence Drizzle
+
+- Les rows Drizzle sont des details de persistence: elles ne traversent jamais la frontiere `infrastructure`.
+- Toute table utilisee par un repository ou un mapper possede un type de row nomme dans `infrastructure/adapter/outbound/persistence/drizzle/types/<entity>.ts`.
+- Les mappers importent ce type de row; ils ne declarent pas `typeof table.$inferSelect` inline.
+- Le type peut etre derive avec les utilitaires Drizzle. Si le projet adopte `drizzle-zod` comme dependance standard, le fichier de type peut exporter `createSelectSchema(table)` et le type derive avec `z.infer`.
 
 ### Convention tests
 
@@ -214,6 +230,7 @@ Implementation standard:
   avec des codes namespacés par module.
 - garder `api/contract.ts` comme contrat racine explicite (pas un barrel passif).
 - placer les contrats d'operations dans `api/operation/*` et les codes/types d'erreur dans `api/error/*`.
+- Les types qui appartiennent au contrat d'un port ou d'une operation peuvent etre exportes dans un `declare namespace` merge avec ce contrat (ex: `IdentityRepository.CreateResult`). Les types purement locaux restent non exportes ou inline.
 
 Regle adoptee:
 

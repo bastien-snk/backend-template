@@ -35,8 +35,8 @@ src/modules/<module-name>/
         http/
           routes/
           controller/
-          endpoints/
           schema/
+            endpoint/
             request/
             response/
             params/
@@ -94,6 +94,8 @@ src/modules/<module-name>/
 - Les events applicatifs d'un module vivent dans `application/event/`.
 - Interdit: imports profonds vers l'interieur d'un autre module.
 - `api/` est une interface in-process, pas du transport HTTP.
+- Un adapter HTTP d'un module ne depend jamais de `api/`, `facade.ts`, `api/view/`, `api/type/` ou `api/mapper/` de ce meme module. Il depend uniquement de `application/`, `domain/` et de ses propres schemas/mappers HTTP.
+- Le flux HTTP est `application/domain -> mapper HTTP -> reponse wire`. Les controllers deleguent aux use-cases et les mappers HTTP traduisent leurs modeles vers le contrat wire.
 
 ### Exception encadrée: FK cross-module
 
@@ -157,6 +159,7 @@ Cycle de vie attendu:
 - Ports en `port/` (interfaces) et adapters techniques en `infrastructure/`.
 - Pour les integrations multi-provider: ajouter un `*-provider-selector` en `application/port/`.
 - Erreurs applicatives dans `application/errors`.
+- Les types qui appartiennent au contrat d'un port peuvent etre exportes dans un `declare namespace` merge avec ce port (ex: `IdentityRepository.CreateResult`). Les types qui ne participent a aucun contrat restent locaux.
 
 ### Infrastructure
 
@@ -169,6 +172,18 @@ Cycle de vie attendu:
   `src/integrations/<provider>/`.
 - Jobs et eventing dans `infrastructure/job/` et `infrastructure/event/`.
 - Configuration module via schemas Zod dans `infrastructure/config/schema/*.ts`.
+
+#### HTTP
+
+- `schema/endpoint/` contient les endpoint specifications Elysia/OpenAPI. Chaque specification compose les schemas `request/`, `response/`, `params/` et `query/` de son operation ainsi que ses metadonnees OpenAPI.
+- `schema/request/`, `schema/response/`, `schema/params/` et `schema/query/` contiennent les fragments de contrat HTTP. `endpoints/` n'est pas un dossier canonique.
+
+#### Persistence Drizzle
+
+- Toute table utilisee par un repository ou un mapper possede un type de row nomme dans `drizzle/types/<entity>.ts`.
+- Les rows Drizzle restent des details de persistence et ne traversent jamais `infrastructure`.
+- Les mappers importent ces types; ils ne declarent pas `typeof table.$inferSelect` inline.
+- Si `drizzle-zod` est adopte comme dependance standard du projet, les fichiers de `types/` utilisent `createSelectSchema(table)` et `z.infer` pour definir les rows.
 
 ### API (in-process)
 
@@ -183,6 +198,7 @@ Cycle de vie attendu:
 - implementation recommandee de `ApiError`: `ModuleApiError` (`systems/module`) +
   codes d'erreur namespacés par module.
 - les erreurs internes `application/domain` ne doivent pas traverser la frontiere `api/`.
+- Les types qui composent le contrat public d'une operation ou d'un port peuvent etre exportes dans un `declare namespace` merge avec ce contrat. Le nombre actuel de consommateurs ne remet pas en cause un type qui fait partie d'une frontiere publique.
 - un use-case `application` ne doit pas importer `api/` de son propre module; il publie ses events applicatifs via un port implemente dans `infrastructure/event/publisher/`.
 - un `command/` ou `query/` ne depend pas directement d'un autre `command/` ou `query/`; extraire la logique commune dans `application/service/`, `domain/service/` ou derriere un port.
 - les listeners d'events sont ranges par intention dans `infrastructure/event/listener/internal/reaction/`, `infrastructure/event/listener/internal/relay/` et `infrastructure/event/listener/integration/reaction/`.
@@ -330,5 +346,7 @@ ajout sur l'un en changement de contrat pour l'autre.
 - Aucune logique metier lourde dans controllers et repositories techniques.
 - Pattern jobs respecte (`infrastructure/job/*`, ports metier `send*`, worker dedie, zero dependance directe a `pg-boss`).
 - Schemas HTTP alignes (`schema/request`, `schema/response`, `schema/params`, `schema/query`), nommes d'apres leur endpoint, un fichier par endpoint.
+- Endpoint specifications Elysia/OpenAPI dans `schema/endpoint/`.
+- Rows Drizzle dans `drizzle/types/`, sans type `$inferSelect` inline dans les mappers.
 - Listes: `data` uniquement pour une page curseur, champ nomme sinon.
 - Documentation technique mise a jour si une decision structurante change.

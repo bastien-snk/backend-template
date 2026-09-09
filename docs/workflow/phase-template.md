@@ -52,6 +52,15 @@ src/modules/[module]/
 - Persistence or migration: [none or details]
 - Architecture references: [links]
 
+### Ready Consistency Checklist
+
+- [ ] Technical design checked against `docs/technical/architecture.md`,  `docs/technical/module-structure-guide.md`, `docs/technical/conventions.md`.
+- [ ] Applicable conventions checked: dependency boundaries, canonical file tree, public API, HTTP boundary, and persistence.
+- [ ] New dependencies and their rationale are explicit.
+- [ ] Persistence constraints, migrations, and required migration checks are explicit.
+- [ ] HTTP and in-process contracts are distinct; required schemas, mappers, and tests are explicit.
+- [ ] Any conflict with architecture or conventions is recorded in Open Questions and resolved before this phase is marked Ready.
+
 ## Implementation Tasks
 
 - [ ] [Task]
