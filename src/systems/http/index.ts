@@ -10,6 +10,7 @@ export {
     httpErrorIssueSchema,
     httpErrorResponseSchema,
 } from "@/systems/http/schema/http-error-response-schema";
+export { idempotencyKeyHeaderSchema } from "@/systems/http/schema/idempotency-key-header-schema";
 
 export type {
     ErrorResponse,
@@ -20,4 +21,5 @@ export type {
     HttpErrorIssue,
     HttpErrorResponse,
 } from "@/systems/http/schema/http-error-response-schema";
+export type { IdempotencyKeyHeader } from "@/systems/http/schema/idempotency-key-header-schema";
 export type { ResponseMapper } from "@/systems/mapper";

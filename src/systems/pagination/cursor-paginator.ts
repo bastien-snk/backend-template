@@ -3,6 +3,7 @@ import type { CursorPaginatorOptions } from "@/systems/pagination/cursor-paginat
 import type { CursorPayload } from "@/systems/pagination/cursor-payload";
 import { InvalidCursorError } from "@/systems/pagination/errors/invalid-cursor";
 import { SortDirection } from "@/systems/pagination/sort-direction";
+import type { SortField } from "@/systems/pagination/sort-field";
 
 export class CursorPaginator {
     private readonly maxLimit: number;
@@ -43,6 +44,25 @@ export class CursorPaginator {
         this.assertCursorPayload(parsed);
 
         return parsed;
+    }
+
+    assertSort(cursor: CursorPayload | null, expected: SortField[]): void {
+        if (cursor === null) {
+            return;
+        }
+
+        if (
+            cursor.sort.length !== expected.length ||
+            cursor.sort.some(
+                (sortField, index) =>
+                    sortField.field !== expected[index]?.field ||
+                    sortField.direction !== expected[index]?.direction,
+            )
+        ) {
+            throw new InvalidCursorError(
+                "sort does not match the expected sort",
+            );
+        }
     }
 
     private assertCursorPayload(
