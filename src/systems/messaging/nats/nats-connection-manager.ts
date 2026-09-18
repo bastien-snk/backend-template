@@ -21,6 +21,11 @@ export class NatsConnectionManager {
         this.logger.info("NATS connected", { servers: this.servers });
     }
 
+    getConnection(): NatsConnection {
+        if (!this.connection) throw new Error("NATS is not started");
+        return this.connection;
+    }
+
     getJetStream(): JetStreamClient {
         if (!this.jetStream) throw new Error("NATS is not started");
         return this.jetStream;
